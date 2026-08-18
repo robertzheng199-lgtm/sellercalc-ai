@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog";
 import { regionalCalculators } from "@/lib/regionalCalculators";
 
-const baseUrl = "https://sellercalc.ai";
+const baseUrl = "https://sellercalc-ai.vercel.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

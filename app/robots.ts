@@ -1,13 +1,11 @@
 import type { MetadataRoute } from "next";
 
-const baseUrl = "https://sellercalc.ai";
-
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: "https://sellercalc-ai.vercel.app/sitemap.xml",
   };
 }
