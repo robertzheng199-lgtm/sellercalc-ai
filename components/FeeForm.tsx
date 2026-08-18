@@ -1,50 +1,67 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Field from "@/components/Field";
 import { calculateTikTokFee } from "@/lib/feeCalculator";
+import type { Dictionary } from "@/lib/i18n";
 
 type Result = ReturnType<typeof calculateTikTokFee>;
 
-export default function FeeForm() {
+export default function FeeForm({ dict }: { dict: Dictionary["fee"] }) {
   const [result, setResult] = useState<Result>();
 
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const f = e.currentTarget;
-    const value = (name: string) =>
-      Number((f.elements.namedItem(name) as HTMLInputElement).value);
+
+    const form = new FormData(e.currentTarget);
 
     setResult(
-      calculateTikTokFee(value("price"), value("commission"), value("affiliate"))
+      calculateTikTokFee(
+        Number(form.get("price")) || 0,
+        Number(form.get("platformRate")) || 0,
+        Number(form.get("affiliateRate")) || 0
+      )
     );
   }
 
   return (
     <div>
       <form onSubmit={submit} className="mt-10 space-y-4">
-        <input name="price" placeholder="Product Price" className="input" />
-        <input
-          name="commission"
-          placeholder="TikTok Platform Fee %"
-          className="input"
+        <Field label={dict.price} name="price" placeholder="39.99" />
+        <Field
+          label={dict.platformRate}
+          name="platformRate"
+          placeholder="6"
         />
-        <input
-          name="affiliate"
-          placeholder="Affiliate Commission %"
-          className="input"
+        <Field
+          label={dict.affiliateRate}
+          name="affiliateRate"
+          placeholder="10"
         />
-        <button className="bg-black text-white px-6 py-3 rounded-xl">
-          Calculate Fees
+
+        <button className="rounded-xl bg-black px-6 py-3 text-white">
+          {dict.calculate}
         </button>
       </form>
 
       {result && (
-        <div className="mt-10 bg-white rounded-xl shadow p-6">
-          <h2 className="text-xl font-bold">Your Result</h2>
-          <p>Platform Fee: ${result.platformFee}</p>
-          <p>Affiliate Fee: ${result.affiliateFee}</p>
-          <p>Total Fees: ${result.totalFee}</p>
-          <p>Seller Receives: ${result.sellerReceives}</p>
+        <div className="mt-10 rounded-xl bg-white p-6 shadow">
+          <h2 className="text-xl font-bold">{dict.resultTitle}</h2>
+
+          <div className="mt-4 space-y-2">
+            <p>
+              {dict.platformFeeLine}: ${result.platformFee.toFixed(2)}
+            </p>
+            <p>
+              {dict.affiliateFeeLine}: ${result.affiliateFee.toFixed(2)}
+            </p>
+            <p>
+              {dict.totalFees}: ${result.totalFee.toFixed(2)}
+            </p>
+            <p>
+              {dict.sellerReceives}: ${result.sellerReceives.toFixed(2)}
+            </p>
+          </div>
         </div>
       )}
     </div>

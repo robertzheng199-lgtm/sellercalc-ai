@@ -7,15 +7,15 @@ import {
 } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "About SellerCalc AI",
+  title: "关于 SellerCalc AI",
   description:
-    "SellerCalc AI builds simple free tools that help ecommerce sellers understand profit, fees and ad performance.",
+    "SellerCalc AI 构建简单免费的工具，帮助电商卖家理解利润、费用和广告表现。",
   alternates: {
-    canonical: `${siteUrl}/about`,
+    canonical: `${siteUrl}/zh/about`,
     languages: alternateLanguages("/about"),
   },
 };
 
-export default function AboutPage() {
-  return <AboutView dict={getDictionary("en")} />;
+export default function ZhAbout() {
+  return <AboutView dict={getDictionary("zh")} />;
 }

@@ -1,75 +1,34 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Field from "@/components/Field";
+import { calculateProfit, type ProfitResult } from "@/lib/calculator";
+import type { Dictionary } from "@/lib/i18n";
 
-type Result = {
-  revenue: number;
-  platformFee: number;
-  affiliateFee: number;
-  productCost: number;
-  shipping: number;
-  ads: number;
-  packaging: number;
-  refundLoss: number;
-  profit: number;
-  margin: number;
-  breakEvenPrice: number;
-};
-
-export default function Calculator() {
-  const [result, setResult] = useState<Result | null>(null);
+export default function Calculator({
+  dict,
+}: {
+  dict: Dictionary["calculator"];
+}) {
+  const [result, setResult] = useState<ProfitResult | null>(null);
 
   function calculate(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const form = new FormData(e.currentTarget);
 
-    const price = Number(form.get("price")) || 0;
-    const cost = Number(form.get("cost")) || 0;
-    const shipping = Number(form.get("shipping")) || 0;
-    const packaging = Number(form.get("packaging")) || 0;
-    const affiliateRate = Number(form.get("affiliate")) || 0;
-    const platformRate = Number(form.get("platformFee")) || 0;
-    const ads = Number(form.get("ads")) || 0;
-    const refundRate = Number(form.get("refundRate")) || 0;
-
-    const platformFee = (price * platformRate) / 100;
-    const affiliateFee = (price * affiliateRate) / 100;
-    const refundLoss = (price * refundRate) / 100;
-
-    const profit =
-      price -
-      platformFee -
-      affiliateFee -
-      cost -
-      shipping -
-      packaging -
-      ads -
-      refundLoss;
-
-    const margin = price > 0 ? (profit / price) * 100 : 0;
-
-    const variableRate =
-      platformRate / 100 + affiliateRate / 100 + refundRate / 100;
-
-    const fixedCosts = cost + shipping + packaging + ads;
-
-    const breakEvenPrice =
-      variableRate < 1 ? fixedCosts / (1 - variableRate) : 0;
-
-    setResult({
-      revenue: price,
-      platformFee,
-      affiliateFee,
-      productCost: cost,
-      shipping,
-      ads,
-      packaging,
-      refundLoss,
-      profit,
-      margin,
-      breakEvenPrice,
-    });
+    setResult(
+      calculateProfit({
+        price: Number(form.get("price")) || 0,
+        cost: Number(form.get("cost")) || 0,
+        shipping: Number(form.get("shipping")) || 0,
+        packaging: Number(form.get("packaging")) || 0,
+        affiliateRate: Number(form.get("affiliate")) || 0,
+        platformRate: Number(form.get("platformFee")) || 0,
+        ads: Number(form.get("ads")) || 0,
+        refundRate: Number(form.get("refundRate")) || 0,
+      })
+    );
   }
 
   return (
@@ -79,24 +38,32 @@ export default function Calculator() {
         className="rounded-2xl bg-white p-6 shadow-sm"
       >
         <div className="space-y-4">
-          <Field label="Selling Price" name="price" placeholder="39.99" />
-          <Field label="Product Cost" name="cost" placeholder="10" />
-          <Field label="Shipping Cost" name="shipping" placeholder="4" />
-          <Field label="Packaging Cost" name="packaging" placeholder="0.50" />
           <Field
-            label="TikTok Shop Fee %"
-            name="platformFee"
-            placeholder="6"
-            hint="Enter the rate shown in your current Seller Center."
+            label={dict.sellingPrice}
+            name="price"
+            placeholder="39.99"
+          />
+          <Field label={dict.productCost} name="cost" placeholder="10" />
+          <Field label={dict.shipping} name="shipping" placeholder="4" />
+          <Field
+            label={dict.packaging}
+            name="packaging"
+            placeholder="0.50"
           />
           <Field
-            label="Affiliate Commission %"
+            label={dict.platformFee}
+            name="platformFee"
+            placeholder="6"
+            hint={dict.platformFeeHint}
+          />
+          <Field
+            label={dict.affiliate}
             name="affiliate"
             placeholder="10"
           />
-          <Field label="Advertising Cost" name="ads" placeholder="5" />
+          <Field label={dict.advertising} name="ads" placeholder="5" />
           <Field
-            label="Estimated Refund Rate %"
+            label={dict.refundRate}
             name="refundRate"
             placeholder="3"
           />
@@ -117,69 +84,35 @@ export default function Calculator() {
             hover:opacity-90
           "
         >
-          Calculate Profit
+          {dict.calculate}
         </button>
       </form>
 
-      <ResultCard result={result} />
+      <ResultCard dict={dict} result={result} />
     </div>
   );
 }
 
-function Field({
-  label,
-  name,
-  placeholder,
-  hint,
+function ResultCard({
+  dict,
+  result,
 }: {
-  label: string;
-  name: string;
-  placeholder: string;
-  hint?: string;
+  dict: Dictionary["calculator"];
+  result: ProfitResult | null;
 }) {
-  return (
-    <div>
-      <label className="mb-2 block text-sm font-medium">{label}</label>
-
-      <input
-        name={name}
-        type="number"
-        step="0.01"
-        min="0"
-        placeholder={placeholder}
-        className="
-          w-full
-          rounded-xl
-          border
-          border-gray-200
-          px-4
-          py-3
-          outline-none
-          focus:border-black
-        "
-      />
-
-      {hint && <p className="mt-1 text-xs text-gray-500">{hint}</p>}
-    </div>
-  );
-}
-
-function ResultCard({ result }: { result: Result | null }) {
   if (!result) {
     return (
       <div className="rounded-2xl bg-white p-8 shadow-sm">
-        <h2 className="text-2xl font-bold">Your Profit</h2>
+        <h2 className="text-2xl font-bold">{dict.emptyTitle}</h2>
 
-        <p className="mt-3 text-gray-500">
-          Enter your product economics to calculate estimated profit.
-        </p>
+        <p className="mt-3 text-gray-500">{dict.emptyBody}</p>
       </div>
     );
   }
 
   return (
     <div className="rounded-2xl bg-white p-8 shadow-sm">
-      <p className="text-sm text-gray-500">Estimated Net Profit</p>
+      <p className="text-sm text-gray-500">{dict.resultLabel}</p>
 
       <div
         className={`mt-2 text-5xl font-bold ${
@@ -190,22 +123,28 @@ function ResultCard({ result }: { result: Result | null }) {
       </div>
 
       <p className="mt-2 text-gray-500">
-        Profit Margin: {result.margin.toFixed(1)}%
+        {dict.marginLabel}: {result.margin.toFixed(1)}%
       </p>
 
       <div className="my-8 border-t" />
 
-      <Breakdown label="Revenue" value={result.revenue} />
-      <Breakdown label="TikTok Shop Fee" value={-result.platformFee} />
-      <Breakdown label="Affiliate Commission" value={-result.affiliateFee} />
-      <Breakdown label="Product Cost" value={-result.productCost} />
-      <Breakdown label="Shipping" value={-result.shipping} />
-      <Breakdown label="Packaging" value={-result.packaging} />
-      <Breakdown label="Advertising" value={-result.ads} />
-      <Breakdown label="Estimated Refund Loss" value={-result.refundLoss} />
+      <Breakdown label={dict.revenue} value={result.revenue} />
+      <Breakdown
+        label={dict.platformFeeLine}
+        value={-result.platformFee}
+      />
+      <Breakdown
+        label={dict.affiliateFeeLine}
+        value={-result.affiliateFee}
+      />
+      <Breakdown label={dict.productCostLine} value={-result.productCost} />
+      <Breakdown label={dict.shippingLine} value={-result.shipping} />
+      <Breakdown label={dict.packagingLine} value={-result.packaging} />
+      <Breakdown label={dict.advertisingLine} value={-result.ads} />
+      <Breakdown label={dict.refundLoss} value={-result.refundLoss} />
 
       <div className="mt-6 rounded-xl bg-gray-50 p-4">
-        <p className="text-sm text-gray-500">Estimated Break-even Price</p>
+        <p className="text-sm text-gray-500">{dict.breakEven}</p>
 
         <p className="mt-1 text-2xl font-bold">
           ${result.breakEvenPrice.toFixed(2)}

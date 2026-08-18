@@ -1,51 +1,63 @@
-export function calculateProfit(
-    price: number,
-    cost: number,
-    shipping: number,
-    affiliate: number,
-    ads: number
-) {
+export type ProfitInput = {
+  price: number;
+  cost: number;
+  shipping: number;
+  packaging: number;
+  platformRate: number;
+  affiliateRate: number;
+  ads: number;
+  refundRate: number;
+};
 
-    const tiktokFee =
-        price * 0.06;
+export type ProfitResult = {
+  revenue: number;
+  platformFee: number;
+  affiliateFee: number;
+  productCost: number;
+  shipping: number;
+  ads: number;
+  packaging: number;
+  refundLoss: number;
+  profit: number;
+  margin: number;
+  breakEvenPrice: number;
+};
 
+export function calculateProfit(input: ProfitInput): ProfitResult {
+  const platformFee = (input.price * input.platformRate) / 100;
+  const affiliateFee = (input.price * input.affiliateRate) / 100;
+  const refundLoss = (input.price * input.refundRate) / 100;
 
-    const affiliateFee =
-        price * affiliate / 100;
+  const profit =
+    input.price -
+    platformFee -
+    affiliateFee -
+    input.cost -
+    input.shipping -
+    input.packaging -
+    input.ads -
+    refundLoss;
 
+  const margin = input.price > 0 ? (profit / input.price) * 100 : 0;
 
-    const profit =
-        price -
-        cost -
-        shipping -
-        tiktokFee -
-        affiliateFee -
-        ads;
+  const variableRate =
+    input.platformRate / 100 + input.affiliateRate / 100 + input.refundRate / 100;
 
+  const fixedCosts = input.cost + input.shipping + input.packaging + input.ads;
 
-    const margin =
-        (price === 0)
-            ?
-            0
-            :
-            (profit / price) * 100;
+  const breakEvenPrice = variableRate < 1 ? fixedCosts / (1 - variableRate) : 0;
 
-
-
-    return {
-
-        profit:
-            Number(profit.toFixed(2)),
-
-        margin:
-            Number(margin.toFixed(2)),
-
-        fees:
-            Number(
-                (tiktokFee + affiliateFee)
-                    .toFixed(2)
-            )
-
-    }
-
+  return {
+    revenue: input.price,
+    platformFee,
+    affiliateFee,
+    productCost: input.cost,
+    shipping: input.shipping,
+    ads: input.ads,
+    packaging: input.packaging,
+    refundLoss,
+    profit,
+    margin,
+    breakEvenPrice,
+  };
 }

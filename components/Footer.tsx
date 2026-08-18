@@ -1,6 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { detectLocale, getDictionary } from "@/lib/i18n";
 
 export default function Footer() {
+  const pathname = usePathname() ?? "/";
+  const locale = detectLocale(pathname);
+  const dict = getDictionary(locale);
+
+  const z = (path: string) =>
+    locale === "zh" ? (path === "/" ? "/zh" : `/zh${path}`) : path;
+
   return (
     <footer className="border-t bg-white">
       <div className="mx-auto max-w-6xl px-6 py-12">
@@ -9,87 +20,87 @@ export default function Footer() {
             <div className="text-lg font-bold">SellerCalc AI</div>
 
             <p className="mt-3 text-sm leading-6 text-gray-500">
-              Simple tools to help ecommerce sellers understand their numbers.
+              {dict.footer.tagline}
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold">Tools</h3>
+            <h3 className="font-semibold">{dict.footer.tools}</h3>
 
             <div className="mt-4 space-y-3 text-sm">
               <Link
-                href="/profit-calculator"
+                href={z("/profit-calculator")}
                 className="block text-gray-500 hover:text-black"
               >
-                Profit Calculator
+                {dict.nav.profit}
               </Link>
 
               <Link
-                href="/fee-calculator"
+                href={z("/fee-calculator")}
                 className="block text-gray-500 hover:text-black"
               >
-                Fee Calculator
+                {dict.nav.fee}
               </Link>
 
               <Link
-                href="/roas-calculator"
+                href={z("/roas-calculator")}
                 className="block text-gray-500 hover:text-black"
               >
-                ROAS Calculator
+                {dict.nav.roas}
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="font-semibold">Resources</h3>
+            <h3 className="font-semibold">{dict.footer.resources}</h3>
 
             <div className="mt-4 space-y-3 text-sm">
               <Link
-                href="/blog"
+                href={z("/blog")}
                 className="block text-gray-500 hover:text-black"
               >
-                Seller Guides
+                {dict.footer.guides}
               </Link>
 
               <Link
-                href="/tools"
+                href={z("/tools")}
                 className="block text-gray-500 hover:text-black"
               >
-                All Tools
+                {dict.footer.allTools}
               </Link>
             </div>
           </div>
 
           <div>
-            <h3 className="font-semibold">Company</h3>
+            <h3 className="font-semibold">{dict.footer.company}</h3>
 
             <div className="mt-4 space-y-3 text-sm">
               <Link
-                href="/about"
+                href={z("/about")}
                 className="block text-gray-500 hover:text-black"
               >
-                About
+                {dict.footer.about}
               </Link>
 
               <Link
                 href="/privacy"
                 className="block text-gray-500 hover:text-black"
               >
-                Privacy
+                {dict.footer.privacy}
               </Link>
 
               <Link
                 href="/terms"
                 className="block text-gray-500 hover:text-black"
               >
-                Terms
+                {dict.footer.terms}
               </Link>
             </div>
           </div>
         </div>
 
         <div className="mt-12 border-t pt-6 text-sm text-gray-400">
-          © {new Date().getFullYear()} SellerCalc AI. All rights reserved.
+          © {new Date().getFullYear()} SellerCalc AI. {dict.footer.rights}
         </div>
       </div>
     </footer>

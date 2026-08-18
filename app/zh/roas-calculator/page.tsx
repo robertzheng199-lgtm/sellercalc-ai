@@ -7,15 +7,15 @@ import {
 } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "TikTok Shop ROAS Calculator",
+  title: "TikTok Shop ROAS 计算器",
   description:
-    "Calculate your TikTok Shop advertising return on ad spend (ROAS). Free ROAS calculator for TikTok Shop sellers.",
+    "免费计算 TikTok Shop 广告回报率（ROAS），衡量你的广告投放效果。",
   alternates: {
-    canonical: `${siteUrl}/roas-calculator`,
+    canonical: `${siteUrl}/zh/roas-calculator`,
     languages: alternateLanguages("/roas-calculator"),
   },
 };
 
-export default function RoasCalculatorPage() {
-  return <RoasView dict={getDictionary("en")} />;
+export default function ZhRoasCalculator() {
+  return <RoasView dict={getDictionary("zh")} />;
 }

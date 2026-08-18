@@ -7,15 +7,15 @@ import {
 } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "TikTok Shop Seller Guides",
+  title: "TikTok Shop 卖家指南",
   description:
-    "Practical guides about TikTok Shop profit, fees, ROAS and product pricing.",
+    "关于 TikTok Shop 利润、费用、ROAS 和商品定价的实用指南。",
   alternates: {
-    canonical: `${siteUrl}/blog`,
+    canonical: `${siteUrl}/zh/blog`,
     languages: alternateLanguages("/blog"),
   },
 };
 
-export default function BlogPage() {
-  return <BlogView dict={getDictionary("en")} />;
+export default function ZhBlog() {
+  return <BlogView dict={getDictionary("zh")} />;
 }
