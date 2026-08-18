@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sellercalc.ai"),
+  metadataBase: new URL("https://sellercalc-ai.vercel.app"),
 
   title: {
     default: "SellerCalc AI - TikTok Seller Tools",
@@ -39,7 +41,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-gray-50 text-gray-900">
+        <Navbar />
+
+        {children}
+
+        <Footer />
+      </body>
     </html>
   );
 }
